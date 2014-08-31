@@ -1,5 +1,7 @@
 ---
 # tasks file for mesos
+
+# Common tasks for all Mesos nodes
 - name: Add key for Mesosphere repository
   apt_key: url=http://keyserver.ubuntu.com/pks/lookup?op=get&fingerprint=on&search=0xE56151BF state=present
   sudo: yes
@@ -19,12 +21,22 @@
     mode: 0644
   sudo: yes
 
+# Tasks for Master, Slave, and ZooKeeper nodes
 - name: Install mesos package
   apt: pkg={{item}} state=present update_cache=yes
   with_items:
     - mesos
   sudo: yes
   when: mesos_install_mode == "master" or mesos_install_mode == "slave"
+
+# Tasks for Master nodes
+- name: Disable the Mesos Slave service
+  copy:
+    content: "manual"
+    dest: /etc/init/mesos-slave.override
+    mode: 0644
+  sudo: yes
+  when: mesos_install_mode == "master"
 
 - name: Set Mesos Master hostname
   copy:
@@ -58,6 +70,56 @@
   sudo: yes
   when: mesos_install_mode == "master"
 
+# Tasks for Slave nodes
+- name: Disable the Mesos Master service
+  copy:
+    content: "manual"
+    dest: /etc/init/mesos-master.override
+    mode: 0644
+  sudo: yes
+  when: mesos_install_mode == "slave"
+
+- name: Disable the ZooKeeper service
+  copy:
+    content: "manual"
+    dest: /etc/init/zookeeper.override
+    mode: 0644
+  sudo: yes
+  when: mesos_install_mode == "slave"
+
+- name: Set Mesos Slave hostname
+  copy:
+    content: "{{mesos_local_address}}"
+    dest: /etc/mesos-slave/hostname
+    mode: 0644
+  sudo: yes
+  when: mesos_install_mode == "slave"
+
+- name: Set Mesos Slave ip
+  copy:
+    content: "{{mesos_local_address}}"
+    dest: /etc/mesos-slave/ip
+    mode: 0644
+  sudo: yes
+  when: mesos_install_mode == "slave"
+
+- name: Set Mesos Slave ip
+  copy:
+    content: "{{mesos_local_address}}"
+    dest: /etc/mesos-slave/ip
+    mode: 0644
+  sudo: yes
+  when: mesos_install_mode == "slave"
+
+- name: Set Mesos Slave isolation
+  copy:
+    content: "cgroups/cpu,cgroups/mem"
+    dest: /etc/mesos-slave/isolation
+    mode: 0644
+  sudo: yes
+  when: mesos_install_mode == "slave"
+
+# Tasks for Master, Slave, and ZooKeeper nodes
 - name: Set ZooKeeper URL # used for leader election amongst masters
   copy:
     content: "{{zookeeper_url}}"
@@ -66,6 +128,7 @@
   sudo: yes
   when: mesos_install_mode == "master" or mesos_install_mode == "slave"
 
+# Tasks for ZooKeeper nodes only
 - name: Create zookeeper config file
   template: src=zoo.cfg.j2 dest=/etc/zookeeper/conf/zoo.cfg
   sudo: yes
@@ -76,4 +139,6 @@
   sudo: yes
   notify:
     - Restart zookeeper
+    - Start mesos-master
+    - Start mesos-slave
   when: mesos_install_mode == "master"
