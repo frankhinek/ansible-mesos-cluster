@@ -1,2 +1,79 @@
 ---
 # tasks file for mesos
+- name: Add key for Mesosphere repository
+  apt_key: url=http://keyserver.ubuntu.com/pks/lookup?op=get&fingerprint=on&search=0xE56151BF state=present
+  sudo: yes
+
+- name: Determine Linux distribution distributor
+  shell: lsb_release -is | tr '[:upper:]' '[:lower:]'
+  register: release_distributor
+
+- name: Determine Linux distribution codename
+  command: lsb_release -cs
+  register: release_codename
+
+- name: Add Mesosphere repository to sources list
+  copy:
+    content: "deb http://repos.mesosphere.io/{{release_distributor.stdout}} {{release_codename.stdout}} main"
+    dest: /etc/apt/sources.list.d/mesosphere.list
+    mode: 0644
+  sudo: yes
+
+- name: Install mesos package
+  apt: pkg={{item}} state=present update_cache=yes
+  with_items:
+    - mesos
+  sudo: yes
+  when: mesos_install_mode == "master" or mesos_install_mode == "slave"
+
+- name: Set Mesos Master hostname
+  copy:
+    content: "{{mesos_local_address}}"
+    dest: /etc/mesos-master/hostname
+    mode: 0644
+  sudo: yes
+  when: mesos_install_mode == "master"
+
+- name: Set Mesos Master ip
+  copy:
+    content: "{{mesos_local_address}}"
+    dest: /etc/mesos-master/ip
+    mode: 0644
+  sudo: yes
+  when: mesos_install_mode == "master"
+
+- name: Set Mesos Master Cluster name
+  copy:
+    content: "{{mesos_cluster_name}}"
+    dest: /etc/mesos-master/cluster
+    mode: 0644
+  sudo: yes
+  when: mesos_install_mode == "master"
+
+- name: Set Mesos Master quorum count
+  copy:
+    content: "{{mesos_quorum_count}}"
+    dest: /etc/mesos-master/quorum
+    mode: 0644
+  sudo: yes
+  when: mesos_install_mode == "master"
+
+- name: Set ZooKeeper URL # used for leader election amongst masters
+  copy:
+    content: "{{zookeeper_url}}"
+    dest: /etc/mesos/zk
+    mode: 0644
+  sudo: yes
+  when: mesos_install_mode == "master" or mesos_install_mode == "slave"
+
+- name: Create zookeeper config file
+  template: src=zoo.cfg.j2 dest=/etc/zookeeper/conf/zoo.cfg
+  sudo: yes
+  when: mesos_install_mode == "master"
+
+- name: Create zookeeper myid file
+  template: src=zoo_id.j2 dest=/etc/zookeeper/conf/myid
+  sudo: yes
+  notify:
+    - Restart zookeeper
+  when: mesos_install_mode == "master"
