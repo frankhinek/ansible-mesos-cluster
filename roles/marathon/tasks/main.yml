@@ -1,5 +1,14 @@
 ---
 # tasks file for marathon
+- name: Install marathon package
+  apt: pkg={{item}} state=present update_cache=yes
+  with_items:
+    - marathon={{ marathon_pkg_version }}
+  sudo: yes
+  when: marathon_install_type == "package"
+
 - name: Create Marathon Upstart job
   template: src=marathon.conf.j2 dest=/etc/init/marathon.conf
   sudo: yes
+  notify:
+    - Restart marathon

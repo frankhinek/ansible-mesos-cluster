@@ -24,4 +24,4 @@
   sudo: True
 
   roles:
-    - { role: marathon, tags: ["marathon"] }
+    - { role: marathon, marathon_install_type: "package", tags: ["marathon"] }
