@@ -85,6 +85,8 @@
     dest: /etc/init/zookeeper.override
     mode: 0644
   sudo: yes
+  notify:
+    - Stop zookeeper
   when: mesos_install_mode == "slave"
 
 - name: Set Mesos Slave hostname
@@ -140,5 +142,10 @@
   notify:
     - Restart zookeeper
     - Start mesos-master
-    - Start mesos-slave
   when: mesos_install_mode == "master"
+
+- name: Start Mesos Slave service last
+  sudo: yes
+  notify:
+    - Start mesos-slave
+  when: mesos_install_mode == "slave"

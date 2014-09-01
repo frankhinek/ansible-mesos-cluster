@@ -7,8 +7,9 @@
   sudo: yes
   when: marathon_install_type == "package"
 
-- name: Create Marathon Upstart job
+- name: Create Marathon Upstart job for packaged version
   template: src=marathon.conf.j2 dest=/etc/init/marathon.conf
   sudo: yes
   notify:
     - Restart marathon
+  when: marathon_install_type == "package"
