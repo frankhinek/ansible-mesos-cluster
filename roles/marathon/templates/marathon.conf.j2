@@ -6,4 +6,4 @@ stop on runlevel [!2345]
 respawn
 respawn limit 10 5
 
-exec /usr/local/bin/marathon{%- if groups.marathon|count > 1 -%} --ha{% endif %} --hostname {{ mesos_local_address }}
+exec /usr/local/bin/marathon{% if groups.marathon|count > 1 %} --ha{% endif %} --hostname {{ mesos_local_address }}
