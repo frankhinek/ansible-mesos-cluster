@@ -92,14 +92,6 @@
   sudo: yes
   when: mesos_install_mode == "slave"
 
-- name: Set Mesos Slave ip
-  copy:
-    content: "{{mesos_local_address}}"
-    dest: /etc/mesos-slave/ip
-    mode: 0644
-  sudo: yes
-  when: mesos_install_mode == "slave"
-
 - name: Set Mesos Slave isolation
   copy:
     content: "cgroups/cpu,cgroups/mem"
