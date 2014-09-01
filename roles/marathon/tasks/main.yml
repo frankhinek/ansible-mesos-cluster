@@ -5,7 +5,24 @@
   with_items:
     - marathon={{ marathon_pkg_version }}
   sudo: yes
-  when: marathon_install_type == "package"
+  when: marathon_install_type == "package" and marathon_only == False
+
+- name: Install marathon and mesos packages
+  apt: pkg={{item}} state=present update_cache=yes
+  with_items:
+    - mesos={{ mesos_pkg_version }}
+    - marathon={{ marathon_pkg_version }}
+  sudo: yes
+  when: marathon_install_type == "package" and marathon_only == True
+
+  # Used for Marathon to locate the ZooKeeper(s) and Mesos Master(s)
+- name: Set ZooKeeper URL
+  copy:
+    content: "{{zookeeper_url}}"
+    dest: /etc/mesos/zk
+    mode: 0644
+  sudo: yes
+  when: marathon_install_type == "package" and marathon_only == True
 
 - name: Create Marathon Upstart job for packaged version
   template: src=marathon.conf.j2 dest=/etc/init/marathon.conf
