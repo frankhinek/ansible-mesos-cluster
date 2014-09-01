@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   author: Frank Hinek
-  description: Ansible Mesos Playbook Role
+  description: Ansible Marathon Playbook Role
   company: http://frankhinek.com
   license: MIT
   min_ansible_version: 1.2
