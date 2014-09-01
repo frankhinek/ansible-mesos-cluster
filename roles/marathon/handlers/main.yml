@@ -5,3 +5,7 @@
 - name: Restart marathon
   service: name=marathon state=restarted
   sudo: yes
+
+- name: Stop zookeeper
+  shell: stop zookeeper
+  sudo: yes
