@@ -1,7 +1,7 @@
 ---
 # Variables here are applicable to all host groups
 
-mesos_version: 0.20.0-1.0.ubuntu1404
+mesos_pkg_version: 0.20.0-1.0.ubuntu1404
 mesos_local_address: "{{ansible_eth0.ipv4.address}}"
 mesos_cluster_name: "Cluster01"
 mesos_quorum_count: "2"

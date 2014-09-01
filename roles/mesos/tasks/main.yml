@@ -25,7 +25,7 @@
 - name: Install mesos package
   apt: pkg={{item}} state=present update_cache=yes
   with_items:
-    - mesos
+    - mesos={{ mesos_pkg_version }}
   sudo: yes
   when: mesos_install_mode == "master" or mesos_install_mode == "slave"
 
