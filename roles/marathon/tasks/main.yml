@@ -1,6 +1,6 @@
 ---
 # tasks file for marathon
-- name: Install marathon package
+- name: Install marathon package without mesos package
   apt: pkg={{item}} state=present update_cache=yes
   with_items:
     - marathon={{ marathon_pkg_version }}
