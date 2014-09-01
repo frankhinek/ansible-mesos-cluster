@@ -1,17 +1,27 @@
 ---
 # This playbook deploys the entire Mesos cluster infrastructure.
 # RUN: ansible-playbook --ask-sudo-pass -i hosts site.yml
+# RUN only mesos-master: ansible-playbook --ask-sudo-pass -i hosts site.yml --tags "mesos-master"
+# RUN only mesos-slave: ansible-playbook --ask-sudo-pass -i hosts site.yml --tags "mesos-master"
+# RUN only marathon: ansible-playbook --ask-sudo-pass -i hosts site.yml --tags "marathon"
 
 - name: deploy and configure the mesos masters
   hosts: mesos_masters
   sudo: True
 
   roles:
-    - { role: mesos, mesos_install_mode: "master" }
+    - { role: mesos, mesos_install_mode: "master", tags: ["mesos-master"] }
 
 - name: deploy and configure the mesos slaves
   hosts: mesos_slaves
   sudo: True
 
   roles:
-    - { role: mesos, mesos_install_mode: "slave" }
+    - { role: mesos, mesos_install_mode: "slave", tags: ["mesos-slave"] }
+
+- name: deploy and configure marathon hosts
+  hosts: marathon
+  sudo: True
+
+  roles:
+    - { role: marathon, tags: ["marathon"] }
