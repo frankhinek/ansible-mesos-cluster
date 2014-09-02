@@ -1,5 +1,5 @@
 ---
-# tasks file for marathon
+# tasks for install marathon from Mesosphere package
 - name: Install marathon package without mesos package
   apt: pkg={{item}} state=present update_cache=yes
   with_items:
@@ -25,7 +25,7 @@
     dest: /etc/init/mesos-master.override
     mode: 0644
   sudo: yes
-  when: marathon_install_type == "package" and marathon_only == True
+  when: marathon_only == True
 
 - name: Disable the Mesos Slave service
   copy:
@@ -33,7 +33,7 @@
     dest: /etc/init/mesos-slave.override
     mode: 0644
   sudo: yes
-  when: marathon_install_type == "package" and marathon_only == True
+  when: marathon_only == True
 
   # Used for Marathon to locate the ZooKeeper(s) and Mesos Master(s)
 - name: Set ZooKeeper URL
@@ -50,3 +50,48 @@
   notify:
     - Restart marathon
   when: marathon_install_type == "package"
+
+# tasks to build and install marathon from source
+- name: Install mesos packages
+  apt: pkg={{item}} state=present update_cache=yes
+  with_items:
+    - mesos={{ mesos_pkg_version }}
+  sudo: yes
+  when: marathon_install_type == "source" and marathon_only == True
+
+- name: Install Open JDK 7 and Git
+  apt: pkg={{item}} state=present update_cache=yes
+  with_items:
+    - openjdk-7-jdk
+    - git
+  sudo: yes
+  when: marathon_install_type == "source"
+
+- name: download Simple Build Tool for Scala
+  get_url: url=http://dl.bintray.com/sbt/debian/{{ sbt_version }} dest=/tmp
+  when: marathon_install_type == "source"
+
+- name: install Simple Build Tool for Scala
+  apt: deb=/tmp/{{ sbt_version }} state=installed
+  sudo: yes
+  when: marathon_install_type == "source"
+
+- name: clone the marathon repository
+  git: repo=https://github.com/mesosphere/marathon.git dest=/tmp/marathon
+  when: marathon_install_type == "source"
+
+- name: build marathon from source
+  shell: sbt assembly chdir=/tmp/marathon
+  when: marathon_install_type == "source"
+
+- name: install marathon
+  command: mv /tmp/marathon /opt/
+  sudo: yes
+  when: marathon_install_type == "source"
+
+- name: Create Marathon Upstart job for packaged version
+  template: src=marathon_src.conf.j2 dest=/etc/init/marathon.conf
+  sudo: yes
+  notify:
+    - Restart marathon
+  when: marathon_install_type == "source"
