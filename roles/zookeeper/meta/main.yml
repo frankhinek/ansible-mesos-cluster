@@ -1,10 +1,10 @@
 ---
 galaxy_info:
-author: Frank Hinek
-description: Ansible ZooKeeper Playbook Role
-company: http://frankhinek.com
-license: MIT
-min_ansible_version: 1.2
+  author: Frank Hinek
+  description: Ansible ZooKeeper Playbook Role
+  company: http://frankhinek.com
+  license: MIT
+  min_ansible_version: 1.2
   #
   # Below are all platforms currently available. Just uncomment
   # the ones that apply to your role. If you don't see your
