@@ -4,22 +4,6 @@
   shell: start mesos-master
   sudo: yes
 
-- name: Stop mesos-master
-  shell: stop mesos-master
-  sudo: yes
-
 - name: Start mesos-slave
   shell: start mesos-slave
-  sudo: yes
-
-- name: Stop mesos-slave
-  shell: stop mesos-slave
-  sudo: yes
-
-- name: Restart zookeeper
-  shell: restart zookeeper
-  sudo: yes
-
-- name: Stop zookeeper
-  shell: stop zookeeper
   sudo: yes

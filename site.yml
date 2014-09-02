@@ -1,11 +1,12 @@
 ---
 # This playbook deploys the entire Mesos cluster infrastructure.
 # RUN: ansible-playbook --ask-sudo-pass -i hosts site.yml
-# RUN only mesos-master: ansible-playbook --ask-sudo-pass -i hosts site.yml --tags "zookeeper"
-# RUN only mesos-master: ansible-playbook --ask-sudo-pass -i hosts site.yml --tags "mesos-master"
-# RUN only mesos-slave: ansible-playbook --ask-sudo-pass -i hosts site.yml --tags "mesos-master"
-# RUN only marathon: ansible-playbook --ask-sudo-pass -i hosts site.yml --tags "marathon"
+# RUN only mesos-master: ansible-playbook --ask-sudo-pass -i hosts site.yml --tags "common,zookeeper"
+# RUN only mesos-master: ansible-playbook --ask-sudo-pass -i hosts site.yml --tags "common,mesos-master"
+# RUN only mesos-slave: ansible-playbook --ask-sudo-pass -i hosts site.yml --tags "common,mesos-master"
+# RUN only marathon: ansible-playbook --ask-sudo-pass -i hosts site.yml --tags "common,marathon"
 
+# all hosts
 - name: run common tasks for all mesos cluster nodes
   hosts: all
   sudo: True
