@@ -38,7 +38,7 @@
   # Used for Marathon to locate the ZooKeeper(s) and Mesos Master(s)
 - name: Set ZooKeeper URL
   copy:
-    content: "{{zookeeper_url}}"
+    content: "{{zookeeper_url}}/mesos"
     dest: /etc/mesos/zk
     mode: 0644
   sudo: yes

@@ -11,7 +11,7 @@
 # used for leader election amongst masters
 - name: Set ZooKeeper URL
   copy:
-    content: "{{zookeeper_url}}"
+    content: "{{zookeeper_url}}/mesos"
     dest: /etc/mesos/zk
     mode: 0644
   sudo: yes
