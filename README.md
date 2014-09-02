@@ -13,6 +13,7 @@ Before you run the playbook you will need to modify the variables in in `group_v
 * `mesos_cluster_name` is arbitrary when testing but you can change to match your naming conventions.
 
 ```
+---
 # Select the Mesos package version install:
 mesos_pkg_version: 0.20.0-1.0.ubuntu1404
 
@@ -29,5 +30,5 @@ mesos_quorum_count: "2"
 mesos_local_address: "{{ansible_eth0.ipv4.address}}"
 mesos_cluster_name: "Cluster01"
 zookeeper_client_port: "2181"
-zookeeper_url: "zk://{{ groups.mesos_masters | join(':' + zookeeper_client_port + ',') }}:{{ zookeeper_client_port }}/mesos"
+zookeeper_url: "zk://{{ groups.zookeepers | join(':' + zookeeper_client_port + ',') }}:{{ zookeeper_client_port }}/mesos"
 ```
