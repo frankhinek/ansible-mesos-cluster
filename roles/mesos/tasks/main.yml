@@ -1,7 +1,7 @@
 ---
 # tasks file for mesos role
 
-# Tasks for Master, Slave, and ZooKeeper nodes
+# Tasks for Master and Slave nodes
 - name: Install mesos package
   apt: pkg={{item}} state=present update_cache=yes
   with_items:
@@ -54,6 +54,8 @@
     dest: /etc/mesos-master/quorum
     mode: 0644
   sudo: yes
+  notify:
+    - Start mesos-master
   when: mesos_install_mode == "master" or mesos_install_mode == "master-slave"
 
 # Tasks for Slave nodes
@@ -65,15 +67,15 @@
   sudo: yes
   when: mesos_install_mode == "slave"
 
-- name: Disable the ZooKeeper service
-  copy:
-    content: "manual"
-    dest: /etc/init/zookeeper.override
-    mode: 0644
-  sudo: yes
-  notify:
-    - Stop zookeeper
-  when: mesos_install_mode == "slave"
+# - name: Disable the ZooKeeper service
+#   copy:
+#     content: "manual"
+#     dest: /etc/init/zookeeper.override
+#     mode: 0644
+#   sudo: yes
+#   notify:
+#     - Stop zookeeper
+#   when: mesos_install_mode == "slave"
 
 - name: Set Mesos Slave hostname
   copy:
@@ -102,15 +104,15 @@
   when: mesos_install_mode == "slave" or mesos_install_mode == "master-slave"
 
 # Tasks for ZooKeeper nodes only
-- name: Create zookeeper config file
-  template: src=zoo.cfg.j2 dest=/etc/zookeeper/conf/zoo.cfg
-  sudo: yes
-  when: mesos_install_mode == "master" or mesos_install_mode == "master-slave"
+# - name: Create zookeeper config file
+#   template: src=zoo.cfg.j2 dest=/etc/zookeeper/conf/zoo.cfg
+#   sudo: yes
+#   when: mesos_install_mode == "master" or mesos_install_mode == "master-slave"
 
-- name: Create zookeeper myid file
-  template: src=zoo_id.j2 dest=/etc/zookeeper/conf/myid
-  sudo: yes
-  notify:
-    - Restart zookeeper
-    - Start mesos-master
-  when: mesos_install_mode == "master" or mesos_install_mode == "master-slave"
+# - name: Create zookeeper myid file
+#   template: src=zoo_id.j2 dest=/etc/zookeeper/conf/myid
+#   sudo: yes
+#   notify:
+#     - Restart zookeeper
+#     - Start mesos-master
+#   when: mesos_install_mode == "master" or mesos_install_mode == "master-slave"

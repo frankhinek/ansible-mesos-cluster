@@ -15,7 +15,7 @@
   sudo: yes
   when: marathon_install_type == "package" and marathon_only == True
 
-# Disable Mesos Master, Mesos Slave, and ZooKeeper services
+# Disable Mesos Master and Mesos Slave services
 # As of Sep 2014 there is a hard dependency on libmesos for the native half
 # of the JNI Mesos bindings. As a result, the mesos package must be installed
 # even on a host that is only running Marathon. This may change in the future.
@@ -35,15 +35,15 @@
   sudo: yes
   when: marathon_install_type == "package" and marathon_only == True
 
-- name: Disable the ZooKeeper service
-  copy:
-    content: "manual"
-    dest: /etc/init/zookeeper.override
-    mode: 0644
-  sudo: yes
-  notify:
-    - Stop zookeeper
-  when: marathon_install_type == "package" and marathon_only == True
+# - name: Disable the ZooKeeper service
+#   copy:
+#     content: "manual"
+#     dest: /etc/init/zookeeper.override
+#     mode: 0644
+#   sudo: yes
+#   notify:
+#     - Stop zookeeper
+#   when: marathon_install_type == "package" and marathon_only == True
 
   # Used for Marathon to locate the ZooKeeper(s) and Mesos Master(s)
 - name: Set ZooKeeper URL
