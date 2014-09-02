@@ -90,7 +90,7 @@
   when: marathon_install_type == "source"
 
 - name: Create Marathon Upstart job for packaged version
-  template: src=marathon_src.conf.j2 dest=/etc/init/marathon.conf
+  template: src=marathon_from_src.conf.j2 dest=/etc/init/marathon.conf
   sudo: yes
   notify:
     - Restart marathon
