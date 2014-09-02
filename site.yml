@@ -76,7 +76,7 @@
   roles:
     - { role: zookeeper, zookeeper_action: "remove", tags: ["zookeeper"] }
 
-- name: remove zookeeper from slave-only host(s)
+- name: remove zookeeper from marathon-only host(s)
   hosts: marathon:!zookeepers
   sudo: True
 
