@@ -1,7 +1,12 @@
-[mesos_masters]
+[zookeepers]
 10.1.1.11 zoo_id=1
 10.1.1.12 zoo_id=2
 10.1.1.13 zoo_id=3
+
+[mesos_masters]
+10.1.1.11
+10.1.1.12
+10.1.1.13
 
 [mesos_slaves]
 10.1.1.40

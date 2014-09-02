@@ -1,6 +1,7 @@
 ---
 # This playbook deploys the entire Mesos cluster infrastructure.
 # RUN: ansible-playbook --ask-sudo-pass -i hosts site.yml
+# RUN only mesos-master: ansible-playbook --ask-sudo-pass -i hosts site.yml --tags "zookeeper"
 # RUN only mesos-master: ansible-playbook --ask-sudo-pass -i hosts site.yml --tags "mesos-master"
 # RUN only mesos-slave: ansible-playbook --ask-sudo-pass -i hosts site.yml --tags "mesos-master"
 # RUN only marathon: ansible-playbook --ask-sudo-pass -i hosts site.yml --tags "marathon"
@@ -12,6 +13,14 @@
   roles:
     - { role: common, tags: ["common"] }
 
+# hosts in the zookeeper group
+- name: deploy and configure the zookeeper hosts
+  hosts: zookeepers
+  sudo: True
+
+  roles:
+    - { role: zookeeper, zookeeper_action: "install", tags: ["zookeeper"] }
+
 # hosts in both the mesos_master and marathon groups
 - name: deploy and configure mesos and slave hosts
   hosts: mesos_masters:&mesos_slaves
@@ -20,6 +29,7 @@
   roles:
     - { role: mesos, mesos_install_mode: "master-slave", tags: ["mesos-master", "mesos-slave"] }
 
+# hosts in only the mesos_master group
 - name: deploy and configure the mesos master-only hosts
   hosts: mesos_masters:!mesos_slaves
   sudo: True
@@ -27,6 +37,7 @@
   roles:
     - { role: mesos, mesos_install_mode: "master", tags: ["mesos-master"] }
 
+# hosts in only the mesos_slave group
 - name: deploy and configure the mesos slave-only hosts
   hosts: mesos_slaves:!mesos_masters
   sudo: True
@@ -49,3 +60,25 @@
 
   roles:
     - { role: marathon, marathon_only: True, tags: ["marathon"] }
+
+# remove ZooKeeper from master-only, slave-only, or marathon-only hosts
+- name: remove zookeeper from master-only host(s)
+  hosts: mesos_masters:!zookeepers
+  sudo: True
+
+  roles:
+    - { role: zookeeper, zookeeper_action: "remove", tags: ["zookeeper"] }
+
+- name: remove zookeeper from slave-only host(s)
+  hosts: mesos_slaves:!zookeepers
+  sudo: True
+
+  roles:
+    - { role: zookeeper, zookeeper_action: "remove", tags: ["zookeeper"] }
+
+- name: remove zookeeper from slave-only host(s)
+  hosts: marathon:!zookeepers
+  sudo: True
+
+  roles:
+    - { role: zookeeper, zookeeper_action: "remove", tags: ["zookeeper"] }
